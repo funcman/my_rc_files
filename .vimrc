@@ -59,6 +59,10 @@ set fileformat=unix
 set endofline
 " 默认使用UTF-8
 set encoding=utf8
+" 查找是忽略大小写
+set ignorecase
+" 查找输入中自动匹配
+set incsearch
 
 " 实用函数
 function! MySys()
@@ -111,5 +115,6 @@ let g:tagbar_type_objc = {
 
 " nerdtree
 map w :NERDTreeToggle<CR>
+nn <silent><F2> :exec("NERDTree ".expand('%:h'))<CR>
 let NERDTreeWinPos='right'
 
