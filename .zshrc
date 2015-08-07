@@ -91,3 +91,95 @@ bindkey -v
 
 # rvm
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+# safe rm
+# Don't remove the file, just move them to a temporary directory.
+# Files are grouped by remove time.
+# e.g.
+#   # pwd => /home/work/
+#   > rm -r -f aa
+#   'aa' will move to ~/.TrashHistory/20141018/aa@120111@_home_work_aa
+_RM_BACKUP_PATH=~/.TrashHistory
+function safe_rm() {
+    mkdir -p ${_RM_BACKUP_PATH}
+    # skip cmd option, e.g. '-rf' in 'rm -rf a b' or '-r/-f' in 'rm -r -f a b'
+    local first_char=${1:0:1}
+    until [ ! "$first_char" = "-" ]
+    do
+        shift
+        first_char=${1:0:1}
+    done
+
+    # check param
+    if [ $# -lt 1 ]; then
+        echo 'usage: rm [-f | -i] [-dPRrvW] file ...'
+        exit 1
+    fi
+
+    local today=`date +"%Y%m%d"`
+    local mvpath=${_RM_BACKUP_PATH}/$today
+
+    # support for multi version
+    local timestamp=`date +"%H%M%S"`
+
+    # create dir if path non-exist
+    if [ ! -d $mvpath ]; then
+        mkdir $mvpath
+    fi
+
+    until [ $# -eq 0 ]
+    do
+        # fetch absolute path of the file
+        local file_path=$1
+        local fchar=`echo "${file_path:0:1}"`
+        if [ "$fchar" = "/" ]; then
+            local dist_path="_${file_path}"
+        else
+            local abs_fpath=`pwd`/$file_path
+            local dist_path="${file_path}@${timestamp}@${abs_fpath}"
+        fi
+
+        # substitue '/' to '_'
+        local final_dist_path=${dist_path//\//^}
+
+        # mv to temp trash
+        mv $file_path $mvpath/$final_dist_path
+
+        # next file
+        shift
+    done
+}
+
+function unsafe_rm() {
+    rm $*
+}
+
+# revert files that remove by safe_rm
+# you can choose the right one in multi files removed
+function revert_rm() {
+    # process multi files
+    until [ $# -eq 0 ]
+    do
+        echo "revert for $1:"
+        for _f in `find $_RM_BACKUP_PATH -name "$1@*" -print`
+        do
+            local d=`echo $_f | awk -F\/ '{print $2}'`
+            local t=`echo $_f | awk -F@ '{print $2}'`
+            local file_path=`echo $_f | awk -F@ '{print $3}'`
+            file_path=${file_path//^/\/}
+
+            echo -n "      $file_path at ${d:0:4}-${d:4:2}-${d:6:2} ${t:0:2}:${t:2:2}:${t:4:2}   [y/n]? "
+            read _confirm
+            if [ "${_confirm}" = 'y' ]; then
+                mv $_f $file_path
+                break
+            fi
+        done
+
+        shift
+    done
+}
+
+alias urm='unsafe_rm'
+alias rm='safe_rm'
+
