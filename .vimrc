@@ -1,31 +1,43 @@
+" Vundle配置
+"
 " 加载Vundle
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-Bundle 'gmarik/vundle'
- 
+set nocompatible
+filetype off
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" 
 " Vundle命令
 " =======
 " Brief help
-" :BundleList          - list configured bundles
-" :BundleInstall(!)    - install(update) bundles
-" :BundleSearch(!) foo - search(or refresh cache first) for foo 
-" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
-" see :h vundle for more details or wiki for FAQ 
-" NOTE: comments after Bundle command are not allowed..
-
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+"
 " Vundle插件配置格式
 " =======
 " vim-scripts仓库里的，按下面格式填写:
-" Bundle 'taglist.vim'
+" Plugin 'taglist.vim'
 " Github网站上非vim-scripts仓库的插件，按下面格式填写
-" Bundle 'Lokaltog/vim-powerline'
+" Plugin 'Lokaltog/vim-powerline'
 " 非上面两种情况的，按下面格式填写
-" Bundle 'git://git.wincent.com/command-t.git'
+" Plugin 'git://git.wincent.com/command-t.git'
 "
 " 插件列表:
-Bundle 'Lokaltog/vim-powerline'
-Bundle 'majutsushi/tagbar'
-Bundle 'scrooloose/nerdtree'
+" 必要插件
+Plugin 'VundleVim/Vundle.vim'
+" 功能插件
+Plugin 'Lokaltog/vim-powerline'
+Plugin 'majutsushi/tagbar'
+Plugin 'scrooloose/nerdtree'
+" 配色插件
+Plugin 'crusoexia/vim-monokai'
+"
+call vundle#end()
+filetype plugin indent on
 
 " vim自己的配置
 " =======
@@ -47,6 +59,8 @@ syntax enable
 set tabstop=4
 set shiftwidth=4
 set expandtab
+" 设置退格键
+set backspace=indent,eol,start
 " 自动对齐、智能缩进、括号匹配等
 set autoindent
 set cindent
@@ -59,6 +73,8 @@ set fileformat=unix
 set endofline
 " 默认使用UTF-8
 set encoding=utf8
+" 依次尝试UTF-8、GBK、GB18030
+set fencs=utf-8,gbk,gb18030
 " 查找是忽略大小写
 set ignorecase
 " 查找输入中自动匹配
