@@ -183,6 +183,9 @@ function revert_rm() {
 alias urm='unsafe_rm'
 alias rm='safe_rm'
 
+# ccat
+command -v ccat | grep ccat > /dev/null && alias cat='ccat'
+
 # neovim
 if [ -f "$HOME/.usenvim" ]; then
     command -v nvim | grep nvim > /dev/null && alias vim='nvim'
