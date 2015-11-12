@@ -46,7 +46,7 @@ ZSH_THEME="rkj-repos"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git autojump osx brew sudo xcode)
+plugins=(git autojump vi-mode osx brew sudo xcode gem pod)
 
 # User configuration
 
