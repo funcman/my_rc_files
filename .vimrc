@@ -30,6 +30,8 @@ call vundle#begin()
 " 必要插件
 Plugin 'VundleVim/Vundle.vim'
 " 功能插件
+Plugin 'AutoComplPop'
+Plugin 'OmniCppComplete'
 Plugin 'Lokaltog/vim-powerline'
 Plugin 'majutsushi/tagbar'
 Plugin 'scrooloose/nerdtree'
@@ -79,15 +81,26 @@ set fencs=utf-8,gbk,gb18030
 set ignorecase
 " 查找输入中自动匹配
 set incsearch
+" PopMenu颜色
+hi Pmenu    ctermfg=white ctermbg=darkred
+hi PmenuSel ctermfg=white ctermbg=red
+" tags
+for TAGS_FILE in split(system('ls ~/.vim/tags/'), '\n')
+    execute 'set tags+=~/.vim/tags/'.TAGS_FILE
+endfor
+set autochdir
 
-" 实用函数
-function! MySys()
-    if has("win32")
-        return "windows"
-    else
-        return "posix"
-    endif
-endfunction
+" OmniCppComplete
+set completeopt=menu,menuone
+let OmniCpp_MayCompleteDot=1
+let OmniCpp_MayCompleteArrow=1
+let OmniCpp_MayCompleteScope=1
+let OmniCpp_NamespaceSearch=1
+let OmniCpp_GlobalScopeSearch=1
+let OmniCpp_DefaultNamespace=["std"]
+let OmniCpp_DefaultNamespace=["boost"]
+let OmniCpp_ShowPrototypeInAbbr=1
+let OmniCpp_SelectFirstItem=2
 
 " vim-powerline
 set laststatus=2
@@ -95,14 +108,9 @@ set t_Co=256
 let g:Powerline_symbols = 'unicode'
 
 " tagbar
-if MySys() == "windows"
-    let g:tagbar_ctags_bin='ctags'
-else
-    let g:tagbar_ctags_bin='/usr/local/Cellar/ctags/5.8_1/bin/ctags'
-endif
-map t :TagbarToggle<CR>
-let g:tagbar_left=1
-let g:tagbar_width=30
+let g:tagbar_ctags_bin='ctags'
+let g:tagbar_left=0
+let g:tagbar_width=31
 let g:tagbar_type_objc = {
     \ 'ctagstype': 'objc',
     \ 'ctagsargs': [
@@ -130,7 +138,41 @@ let g:tagbar_type_objc = {
 \ }
 
 " nerdtree
-map w :NERDTreeToggle<CR>
 nn <silent><F2> :exec("NERDTree ".expand('%:h'))<CR>
 let NERDTreeWinPos='right'
 
+" IDE开关
+"
+function! MyCloseAll()
+    if exists('t:NERDTreeBufName')
+        let nerdtree_open = bufwinnr(t:NERDTreeBufName) != -1
+    else
+        let nerdtree_open = 0
+    endif
+    let tagbar_open = bufwinnr('__Tagbar__') != -1
+
+    if nerdtree_open
+        NERDTreeClose
+    endif
+
+    if tagbar_open
+        TagbarClose
+    endif
+endfunction
+"
+function! MyNERDTreeToggle()
+     TagbarClose
+     NERDTreeToggle
+endfunction
+"
+function! MyTagbarToggle()
+    NERDTreeClose
+    TagbarToggle
+     if bufwinnr('__Tagbar__') != -1
+         wincmd b
+     endif
+endfunction
+"
+nmap w` :call MyCloseAll()<CR>
+nmap w1 :call MyNERDTreeToggle()<CR>
+nmap w2 :call MyTagbarToggle()<CR>
