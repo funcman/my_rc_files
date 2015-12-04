@@ -85,6 +85,7 @@ set incsearch
 hi Pmenu    ctermfg=white ctermbg=darkred
 hi PmenuSel ctermfg=white ctermbg=red
 " tags
+set tags+=$PWD/tags
 for TAGS_FILE in split(system('ls ~/.vim/tags/'), '\n')
     execute 'set tags+=~/.vim/tags/'.TAGS_FILE
 endfor
